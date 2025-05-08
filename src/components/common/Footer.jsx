@@ -36,7 +36,7 @@ const Footer = () => {
           </div>
         </nav>
         <p className="mt-8 text-center text-base text-gray-400">
-          &copy; {new Date().getFullYear()} Spam Shield. All rights reserved.
+          &copy; {new Date().getFullYear()} Nasir and Razi. All rights reserved.
         </p>
       </div>
     </footer>
