@@ -22,7 +22,12 @@ CORS(app, resources={r"/api/*": {"origins": ["http://localhost:5173", "http://lo
 
 # Configuration
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev_key_please_change_in_production')
-app.config['DATABASE_URL'] = os.environ.get('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/spam_detection')
+# app.config['DATABASE_URL'] = os.environ.get('DATABASE_URL', 'postgresql://postgres:Mango@292@localhost:5432/spam_detection')
+app.config['DATABASE_URL'] = os.environ.get(
+    'DATABASE_URL',
+    'postgresql://postgres:Mango%40292@localhost:5432/spam_detection'
+)
+
 app.config['JWT_EXPIRATION'] = int(os.environ.get('JWT_EXPIRATION', 86400))  # 24 hours
 
 # Database connection

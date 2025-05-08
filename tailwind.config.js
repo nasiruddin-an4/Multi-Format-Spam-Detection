@@ -73,6 +73,7 @@ export default {
         'bounce-slow': 'bounce 2s infinite',
         'slideDown': 'slideDown 0.4s ease-out',
         'fade-in': 'fadeIn 0.3s ease-in-out',
+        'slide-down': 'slideDown 0.2s ease-out',
       },
       keyframes: {
         slideDown: {
