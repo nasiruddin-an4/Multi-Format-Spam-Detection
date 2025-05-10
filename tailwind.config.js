@@ -74,6 +74,8 @@ export default {
         'slideDown': 'slideDown 0.4s ease-out',
         'fade-in': 'fadeIn 0.3s ease-in-out',
         'slide-down': 'slideDown 0.2s ease-out',
+        'spin-slow': 'spin 3s linear infinite',
+        bounce: 'bounce 1s infinite',
       },
       keyframes: {
         slideDown: {
@@ -90,10 +92,26 @@ export default {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
         },
+        bounce: {
+          '0%, 100%': {
+            transform: 'translateY(0)',
+            animationTimingFunction: 'cubic-bezier(0.8, 0, 1, 1)',
+          },
+          '50%': {
+            transform: 'translateY(-25%)',
+            animationTimingFunction: 'cubic-bezier(0, 0, 0.2, 1)',
+          },
+        },
       },
       container: {
         center: true,
         padding: '1rem',
+      },
+      width: {
+        '90%': '90%',
+      },
+      transitionTimingFunction: {
+        'in-out': 'cubic-bezier(0.4, 0, 0.2, 1)',
       },
     },
   },
