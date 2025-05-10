@@ -41,22 +41,23 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 function App() {
   return (
     <Routes>
+      {/* Admin routes - outside MainLayout to avoid showing Navbar and Footer */}
+      <Route path="/admin" element={
+        <ProtectedRoute requiredRole="admin">
+          <AdminLayout />
+        </ProtectedRoute>
+      }>
+        <Route index element={<AdminDashboard />} />
+        <Route path="users" element={<AdminUsers />} />
+        <Route path="messages" element={<AdminMessages />} />
+      </Route>
+      
+      {/* Main layout with Navbar and Footer */}
       <Route element={<MainLayout />}>
         {/* Auth routes */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-        </Route>
-        
-        {/* Admin routes */}
-        <Route path="/admin" element={
-          <ProtectedRoute requiredRole="admin">
-            <AdminLayout />
-          </ProtectedRoute>
-        }>
-          <Route index element={<AdminDashboard />} />
-          <Route path="users" element={<AdminUsers />} />
-          <Route path="messages" element={<AdminMessages />} />
         </Route>
         
         {/* Main routes */}

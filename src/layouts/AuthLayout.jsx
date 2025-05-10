@@ -1,6 +1,5 @@
 import { Outlet, Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import Logo from '../components/common/Logo'
 
 const AuthLayout = () => {
   const { isAuthenticated, loading } = useAuth()
@@ -21,26 +20,9 @@ const AuthLayout = () => {
   }
   
   return (
-    <div className="min-h-screen flex flex-col justify-center py-5 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col pt-24 pb-8 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-6xl">
         <div className="flex flex-col items-center">
-          {/* Logo and Name Container */}
-          <div className="flex items-center space-x-4 group p-2 rounded-2xl 
-            hover:bg-white/50 transition-all duration-300 backdrop-blur-sm">
-            <div className="transform transition-transform group-hover:scale-110 duration-300">
-              <Logo className="w-12 h-12" />
-            </div>
-            <div className="flex flex-col">
-              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 
-                to-purple-600 bg-clip-text text-transparent group-hover:tracking-wider 
-                transition-all duration-300">
-                Spam Shield
-              </h2>
-              <div className="h-0.5 w-0 group-hover:w-full bg-gradient-to-r from-blue-600/50 
-                to-purple-600/50 transition-all duration-300 mt-2"></div>
-            </div>
-          </div>
-
           {/* Description */}
           <p className="mt-2 text-gray-600 text-center max-w-4xl text-lg">
             Protect your digital communications with advanced{' '}
@@ -50,7 +32,7 @@ const AuthLayout = () => {
       </div>
       
       {/* Main Content Container */}
-      <div className="mt-3 sm:mx-auto sm:w-full sm:max-w-3xl">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-3xl">
         <div className="relative bg-white/70 backdrop-blur-lg 
           shadow-xl rounded-2xl border-2 border-white/20 overflow-hidden">
           {/* Background Pattern */}

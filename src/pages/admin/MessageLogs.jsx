@@ -43,7 +43,7 @@ const MessageLogs = () => {
   const FilterActions = () => (
     <div className="flex flex-wrap gap-2">
       <select
-        className="border border-gray-300 rounded-md text-sm px-3 py-2"
+        className="border border-gray-300 rounded-md text-sm px-3 py-2 bg-white hover:border-primary-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
         value={filters.isSpam}
         onChange={(e) => handleFilterChange('isSpam', e.target.value)}
       >
@@ -53,7 +53,7 @@ const MessageLogs = () => {
       </select>
       
       <select
-        className="border border-gray-300 rounded-md text-sm px-3 py-2"
+        className="border border-gray-300 rounded-md text-sm px-3 py-2 bg-white hover:border-primary-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
         value={filters.type}
         onChange={(e) => handleFilterChange('type', e.target.value)}
       >
@@ -83,7 +83,9 @@ const MessageLogs = () => {
       Header: 'Type',
       accessor: 'type',
       Cell: ({ value }) => (
-        <span className="capitalize">{value}</span>
+        <span className="capitalize px-2 py-1 text-xs rounded-md bg-gray-100 text-gray-800">
+          {value}
+        </span>
       )
     },
     {
@@ -91,7 +93,7 @@ const MessageLogs = () => {
       accessor: 'isSpam',
       Cell: ({ value }) => (
         <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-          value ? 'bg-danger-100 text-danger-800' : 'bg-success-100 text-success-800'
+          value ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-green-100 text-green-700 border border-green-200'
         }`}>
           {value ? 'Spam' : 'Not Spam'}
         </span>
@@ -100,7 +102,22 @@ const MessageLogs = () => {
     {
       Header: 'Confidence',
       accessor: 'confidence',
-      Cell: ({ value }) => `${Math.round(value * 100)}%`
+      Cell: ({ value }) => {
+        const percent = Math.round(value * 100);
+        return (
+          <div className="flex items-center">
+            <span className="mr-2">{percent}%</span>
+            <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div 
+                className={`h-full rounded-full ${
+                  percent > 75 ? 'bg-red-500' : percent > 40 ? 'bg-yellow-500' : 'bg-green-500'
+                }`}
+                style={{ width: `${percent}%` }}
+              ></div>
+            </div>
+          </div>
+        );
+      }
     },
     {
       Header: 'Date',
@@ -112,7 +129,10 @@ const MessageLogs = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
+        <div className="flex flex-col items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
+          <p className="mt-4 text-gray-600">Loading message logs...</p>
+        </div>
       </div>
     )
   }

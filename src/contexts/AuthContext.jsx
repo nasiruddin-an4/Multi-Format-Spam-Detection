@@ -76,6 +76,80 @@ export const AuthProvider = ({ children }) => {
     }
   }
   
+  const updateProfile = async (userData, photo) => {
+    try {
+      let updatedUser = { ...user };
+      
+      // If there's profile data to update
+      if (userData) {
+        try {
+          const response = await axios.put(`${API_URL}/users/profile`, userData);
+          if (response.data && response.data.user) {
+            updatedUser = { ...updatedUser, ...response.data.user };
+          } else if (response.data) {
+            // If server doesn't return a user object, just update with userData
+            updatedUser = { ...updatedUser, ...userData };
+          }
+        } catch (error) {
+          console.error('Profile data update failed:', error);
+          // Continue with photo upload even if profile update fails
+        }
+      }
+      
+      // If there's a photo to upload
+      if (photo) {
+        try {
+          const formData = new FormData();
+          formData.append('profilePhoto', photo);
+          
+          // Use a temporary URL to display the image immediately
+          const photoObjectURL = URL.createObjectURL(photo);
+          updatedUser = { ...updatedUser, photoURL: photoObjectURL };
+          
+          // Set user state immediately with local photo URL
+          setUser(updatedUser);
+          
+          // Then upload to server async
+          const photoResponse = await axios.post(`${API_URL}/users/profile/photo`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+          
+          // If server returns a URL, update with server URL
+          if (photoResponse.data && photoResponse.data.photoURL) {
+            updatedUser = { 
+              ...updatedUser, 
+              photoURL: photoResponse.data.photoURL 
+            };
+          }
+        } catch (error) {
+          console.error('Photo upload failed:', error);
+          // Keep the local Object URL even if server upload fails
+        }
+      }
+      
+      // Update user state
+      setUser(updatedUser);
+      
+      // For testing/development without backend
+      if (!userData && !photo) {
+        return { 
+          success: false,
+          error: 'No changes were made to update.'
+        };
+      }
+      
+      return { success: true, user: updatedUser };
+    } catch (error) {
+      console.error('Profile update failed', error.response?.data || error.message);
+      return {
+        success: false,
+        error: error.response?.data?.message || 'Profile update failed. Please try again.'
+      };
+    }
+  };
+  
   const logout = () => {
     localStorage.removeItem('token')
     delete axios.defaults.headers.common['Authorization']
@@ -90,7 +164,8 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     register,
-    logout
+    logout,
+    updateProfile
   }
   
   return (
