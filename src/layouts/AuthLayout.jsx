@@ -21,7 +21,7 @@ const AuthLayout = () => {
   }
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col justify-center py-5 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col justify-center py-5 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-6xl">
         <div className="flex flex-col items-center">
           {/* Logo and Name Container */}

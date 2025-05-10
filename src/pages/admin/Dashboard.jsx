@@ -50,60 +50,68 @@ const Dashboard = () => {
     : 0
   
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500">Welcome to the admin dashboard</p>
+    <div className="animate-fade-up">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold gradient-text">Dashboard Overview</h1>
+        <p className="text-gray-600 mt-2">Monitor your system's performance and metrics</p>
       </div>
       
-      {/* Stats Cards */}
+      {/* Stats Cards with hover effects */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatsCard 
-          title="Total Users"
-          value={stats.totalUsers}
-          icon={
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-          }
-          colorClass="bg-primary-500"
-          change={{ isIncrease: true, value: 12 }}
-        />
+        <div className="hover-lift">
+          <StatsCard 
+            title="Total Users"
+            value={stats.totalUsers}
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            }
+            colorClass="bg-primary-500"
+            change={{ isIncrease: true, value: 12 }}
+          />
+        </div>
         
-        <StatsCard 
-          title="Messages Scanned"
-          value={stats.totalMessages}
-          icon={
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-            </svg>
-          }
-          colorClass="bg-accent-500"
-          change={{ isIncrease: true, value: 8 }}
-        />
+        <div className="hover-lift">
+          <StatsCard 
+            title="Messages Scanned"
+            value={stats.totalMessages}
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+            }
+            colorClass="bg-accent-500"
+            change={{ isIncrease: true, value: 8 }}
+          />
+        </div>
         
-        <StatsCard 
-          title="Spam Detected"
-          value={stats.spamCount}
-          icon={
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          }
-          colorClass="bg-danger-500"
-          change={{ isIncrease: false, value: 3 }}
-        />
+        <div className="hover-lift">
+          <StatsCard 
+            title="Spam Detected"
+            value={stats.spamCount}
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            }
+            colorClass="bg-danger-500"
+            change={{ isIncrease: false, value: 3 }}
+          />
+        </div>
         
-        <StatsCard 
-          title="Spam Percentage"
-          value={`${spamPercentage}%`}
-          icon={
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-            </svg>
-          }
-          colorClass="bg-warning-500"
-        />
+        <div className="hover-lift">
+          <StatsCard 
+            title="Spam Percentage"
+            value={`${spamPercentage}%`}
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+              </svg>
+            }
+            colorClass="bg-warning-500"
+          />
+        </div>
       </div>
       
       {/* Message Type Distribution */}

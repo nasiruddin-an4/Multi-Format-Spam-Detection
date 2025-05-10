@@ -3,41 +3,114 @@ import DataTable from '../../components/admin/DataTable'
 import axios from 'axios'
 import { API_URL } from '../../config/api'
 import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext'
 
 const UserManagement = () => {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [userToDelete, setUserToDelete] = useState(null)
-  
+  const navigate = useNavigate()
+  const { logout } = useAuth()
+
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(`${API_URL}/admin/users`)
-      setUsers(response.data)
+      setLoading(true)
+      setError(null)
+      const token = localStorage.getItem('token')
+      
+      if (!token) {
+        throw new Error('No authentication token found')
+      }
+
+      console.log('Fetching users from:', `${API_URL}/admin/users`)
+      const response = await axios.get(`${API_URL}/admin/users`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      console.log('Users data received:', response.data)
+      console.log('Users data type:', typeof response.data, Array.isArray(response.data))
+      
+      // Make sure we have valid data
+      if (Array.isArray(response.data)) {
+        setUsers(response.data)
+      } else if (response.data && typeof response.data === 'object') {
+        // If the response is an object but not an array, check if it has a data property
+        if (response.data.data && Array.isArray(response.data.data)) {
+          setUsers(response.data.data)
+        } else {
+          console.error('Invalid data format received', response.data)
+          setError('Invalid data format received from server')
+          setUsers([]) // Set empty array to prevent rendering errors
+        }
+      } else {
+        console.error('Invalid data format received', response.data)
+        setError('Invalid data format received from server')
+        setUsers([]) // Set empty array to prevent rendering errors
+      }
     } catch (error) {
-      console.error('Error fetching users', error)
-      toast.error('Error loading users')
+      console.error('Error details:', error)
+      
+      // Handle authentication errors
+      if (error.response && error.response.status === 401) {
+        toast.error('Your session has expired. Please login again.')
+        // Force logout and redirect to login
+        setTimeout(() => {
+          logout()
+        }, 1000)
+        return
+      }
+      
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to load users'
+      setError(errorMessage)
+      toast.error(errorMessage)
+      setUsers([]) // Set empty array to prevent rendering errors
     } finally {
       setLoading(false)
     }
   }
-  
+
   useEffect(() => {
     fetchUsers()
   }, [])
-  
+
   const handleDeleteUser = async () => {
     if (!userToDelete) return
     
     try {
-      await axios.delete(`${API_URL}/admin/users/${userToDelete.id}`)
+      const token = localStorage.getItem('token')
+      
+      if (!token) {
+        throw new Error('No authentication token found')
+      }
+      
+      await axios.delete(`${API_URL}/admin/users/${userToDelete.id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      
       setUsers(users.filter(user => user.id !== userToDelete.id))
       toast.success(`User ${userToDelete.name} deleted successfully`)
       setShowDeleteModal(false)
       setUserToDelete(null)
     } catch (error) {
       console.error('Error deleting user', error)
-      toast.error('Error deleting user')
+      
+      // Handle authentication errors
+      if (error.response && error.response.status === 401) {
+        toast.error('Your session has expired. Please login again.')
+        setTimeout(() => {
+          logout()
+        }, 1000)
+        return
+      }
+      
+      toast.error(error.response?.data?.message || 'Error deleting user')
     }
   }
   
@@ -64,7 +137,7 @@ const UserManagement = () => {
     {
       Header: 'Joined',
       accessor: 'createdAt',
-      Cell: ({ value }) => new Date(value).toLocaleDateString()
+      Cell: ({ value }) => value ? new Date(value).toLocaleDateString() : 'N/A'
     },
     {
       Header: 'Actions',
@@ -91,25 +164,35 @@ const UserManagement = () => {
   
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
+      <div className="flex items-center justify-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
       </div>
     )
   }
-  
-  return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">User Management</h1>
-        <p className="text-gray-500">Manage user accounts in the system</p>
+
+  if (error) {
+    return (
+      <div className="text-center text-red-600 py-8">
+        <p className="mb-4 text-lg font-medium">Error: {error}</p>
+        <button 
+          onClick={fetchUsers}
+          className="px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition-colors"
+        >
+          Retry
+        </button>
       </div>
-      
-      <DataTable
-        data={users}
-        columns={columns}
-        title="Users"
-        pagination={true}
-        initialItemsPerPage={10}
+    )
+  }
+
+  return (
+    <div className="container mx-auto px-4">
+      <h1 className="text-2xl font-bold mb-6">User Management</h1>
+      <DataTable 
+        data={users || []} 
+        columns={columns} 
+        title="Users" 
+        pagination={true} 
+        initialItemsPerPage={10} 
       />
       
       {/* Delete Confirmation Modal */}
@@ -131,13 +214,13 @@ const UserManagement = () => {
               <div className="flex justify-center gap-4 mt-3">
                 <button
                   onClick={() => setShowDeleteModal(false)}
-                  className="btn-outline"
+                  className="px-4 py-2 text-gray-500 border border-gray-300 rounded hover:bg-gray-50 focus:outline-none"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDeleteUser}
-                  className="btn-danger"
+                  className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700 focus:outline-none"
                 >
                   Delete
                 </button>

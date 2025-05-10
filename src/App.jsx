@@ -41,25 +41,25 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 function App() {
   return (
     <Routes>
-      {/* Auth routes */}
-      <Route element={<AuthLayout />}>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Route>
-      
-      {/* Admin routes */}
-      <Route path="/admin" element={
-        <ProtectedRoute requiredRole="admin">
-          <AdminLayout />
-        </ProtectedRoute>
-      }>
-        <Route index element={<AdminDashboard />} />
-        <Route path="users" element={<AdminUsers />} />
-        <Route path="messages" element={<AdminMessages />} />
-      </Route>
-      
-      {/* Main routes */}
       <Route element={<MainLayout />}>
+        {/* Auth routes */}
+        <Route element={<AuthLayout />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
+        
+        {/* Admin routes */}
+        <Route path="/admin" element={
+          <ProtectedRoute requiredRole="admin">
+            <AdminLayout />
+          </ProtectedRoute>
+        }>
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="messages" element={<AdminMessages />} />
+        </Route>
+        
+        {/* Main routes */}
         <Route path="/" element={<Home />} />
         <Route path="/detect" element={
           <ProtectedRoute>

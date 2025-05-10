@@ -17,8 +17,14 @@ import pickle
 import json
 
 app = Flask(__name__)
-# Configure CORS to allow requests from the frontend
-CORS(app, resources={r"/api/*": {"origins": ["http://localhost:5173", "http://localhost:3000"]}})
+# Configure CORS to allow requests from the frontend with all necessary headers
+CORS(app, resources={
+    r"/api/*": {
+        "origins": ["http://localhost:5173", "http://localhost:3000", "http://localhost:5173/admin"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 # Configuration
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev_key_please_change_in_production')
@@ -220,6 +226,7 @@ def login():
     password = data.get('password')
     
     if not email or not password:
+        print(f"Login attempt failed: Missing email or password")
         return jsonify({'message': 'Missing email or password'}), 400
     
     try:
@@ -232,7 +239,12 @@ def login():
         cursor.close()
         conn.close()
         
-        if not user or not check_password_hash(user['password'], password):
+        if not user:
+            print(f"Login attempt failed: No user found with email {email}")
+            return jsonify({'message': 'Invalid credentials'}), 401
+            
+        if not check_password_hash(user['password'], password):
+            print(f"Login attempt failed: Invalid password for user {email}")
             return jsonify({'message': 'Invalid credentials'}), 401
         
         # Generate JWT token
@@ -245,6 +257,8 @@ def login():
         
         token = jwt.encode(token_payload, app.config['SECRET_KEY'], algorithm="HS256")
         
+        print(f"Successful login for user {email} with role {user['role']}")
+        
         return jsonify({
             'token': token,
             'user': {
@@ -256,6 +270,7 @@ def login():
         }), 200
     
     except Exception as e:
+        print(f"Login error: {str(e)}")
         return jsonify({'message': 'Login failed', 'error': str(e)}), 500
 
 @app.route('/api/predict', methods=['POST'])

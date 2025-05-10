@@ -39,11 +39,11 @@ const AdminSidebar = () => {
   ]
   
   return (
-    <div className={`${isOpen ? 'w-64' : 'w-20'} h-screen bg-white shadow-md transition-all duration-300 ease-in-out`}>
+    <div className={`${isOpen ? 'w-64' : 'w-20'} h-screen bg-white shadow-xl transition-all duration-300 ease-in-out fixed left-0 top-0 z-30`}>
       <div className="flex items-center justify-between p-4 border-b">
-        <div className={`${isOpen ? 'flex' : 'hidden'} items-center`}>
-          <Logo />
-          <span className="ml-2 text-lg font-semibold text-gray-800">Admin Panel</span>
+        <div className={`${isOpen ? 'opacity-100' : 'opacity-0'} transition-opacity duration-200`}>
+          <Logo className="w-8 h-8" />
+          <span className="ml-2 text-lg font-semibold gradient-text">Admin</span>
         </div>
         <button
           onClick={() => setIsOpen(!isOpen)}
@@ -61,29 +61,26 @@ const AdminSidebar = () => {
         </button>
       </div>
       
-      <nav className="mt-8">
-        <div className="px-4 space-y-1">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path || 
-              (item.path !== '/admin' && location.pathname.startsWith(item.path))
-            
-            return (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={`
-                  flex items-center px-4 py-3 rounded-md
-                  ${isActive 
-                    ? 'bg-primary-100 text-primary-600' 
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}
-                `}
-              >
-                <div className="flex-shrink-0">{item.icon}</div>
-                {isOpen && <span className="ml-3">{item.name}</span>}
-              </Link>
-            )
-          })}
-        </div>
+      <nav className="mt-8 px-4">
+        {navItems.map((item) => {
+          const isActive = location.pathname === item.path || 
+            (item.path !== '/admin' && location.pathname.startsWith(item.path))
+          
+          return (
+            <Link
+              key={item.name}
+              to={item.path}
+              className={`flex items-center px-4 py-3 rounded-lg mb-2 transition-all duration-200
+                ${isActive 
+                  ? 'bg-primary-50 text-primary-600' 
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
+              `}
+            >
+              <div className="flex-shrink-0">{item.icon}</div>
+              {isOpen && <span className="ml-3">{item.name}</span>}
+            </Link>
+          )
+        })}
       </nav>
       
       <div className="absolute bottom-0 w-full border-t border-gray-200">
