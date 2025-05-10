@@ -86,7 +86,7 @@ const Navbar = () => {
                   <Logo className="h-8 w-auto" />
                 </div>
                 <span className="ml-2 text-xl font-bold bg-gradient-to-r from-primary-600 to-accent-500 bg-clip-text text-transparent">
-                  SpamShield
+                  GuardNex
                 </span>
               </Link>
             </div>
@@ -250,7 +250,7 @@ const Navbar = () => {
               }}>
                 <Logo className="h-7 w-auto" />
                 <span className="ml-2 text-lg font-bold bg-gradient-to-r from-primary-600 to-accent-500 bg-clip-text text-transparent">
-                  SpamShield
+                  GuardNex
                 </span>
               </Link>
               <button

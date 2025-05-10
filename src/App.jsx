@@ -16,6 +16,7 @@ import AdminDashboard from './pages/admin/Dashboard'
 import AdminUsers from './pages/admin/UserManagement'
 import AdminMessages from './pages/admin/MessageLogs'
 import NotFound from './pages/NotFound'
+import AboutUs from './pages/AboutUs'
 
 // Protected route component
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -62,6 +63,7 @@ function App() {
         
         {/* Main routes */}
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<AboutUs />} />
         <Route path="/detect" element={
           <ProtectedRoute>
             <DetectionPage />

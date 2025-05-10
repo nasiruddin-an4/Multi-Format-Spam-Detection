@@ -160,7 +160,7 @@ const Register = () => {
               Create Account
             </h1>
             <p className="text-base text-gray-600/90 max-w-md mx-auto">
-              Join SpamShield and protect your communications with advanced AI technology
+              Join GuardNex and protect your communications with advanced AI technology
             </p>
           </div>
 

@@ -71,7 +71,7 @@ const Login = () => {
             <div className="bg-white/20 p-2 rounded-full backdrop-blur-sm">
               <HiOutlineShieldCheck className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold ml-3">SpamShield</h1>
+            <h1 className="text-3xl font-bold ml-3">GuardNex</h1>
           </div>
           <h2 className="text-4xl font-bold mb-6 leading-tight">Welcome back!</h2>
           <p className="text-lg opacity-90 leading-relaxed mb-8">
@@ -86,7 +86,7 @@ const Login = () => {
               ))}
             </div>
             <p className="text-sm font-medium italic">
-              "SpamShield has been an essential tool for our organization, helping us filter out 99.8% of unwanted messages."
+              "GuardNex has been an essential tool for our organization, helping us filter out 99.8% of unwanted messages."
             </p>
             <div className="mt-4 flex items-center">
               <div className="h-10 w-10 rounded-full bg-white/30 flex items-center justify-center">
@@ -107,7 +107,7 @@ const Login = () => {
           <div className="md:hidden flex justify-center mb-8">
             <div className="flex items-center p-2 bg-gradient-to-r from-primary-600 to-accent-500 rounded-lg shadow-lg">
               <HiOutlineShieldCheck className="h-6 w-6 text-white" />
-              <h1 className="text-xl font-bold text-white ml-2">SpamShield</h1>
+              <h1 className="text-xl font-bold text-white ml-2">GuardNex</h1>
             </div>
           </div>
           
@@ -116,7 +116,7 @@ const Login = () => {
               Sign in
             </h2>
             <p className="text-sm text-gray-600">
-              Access your SpamShield account
+              Access your GuardNex account
             </p>
           </div>
 

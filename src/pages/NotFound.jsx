@@ -3,7 +3,7 @@ import { HiOutlineHome, HiOutlineArrowLeft } from 'react-icons/hi'
 
 const NotFound = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen flex items-center justify-center pt-16 px-4 sm:px-6 lg:px-8 relative bg-gradient-to-b from-gray-50 to-white">
       {/* Background Decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary-100/50 to-accent-100/50 rounded-full blur-3xl"></div>
