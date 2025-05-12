@@ -165,7 +165,7 @@ const AboutUs = () => {
                       <span className="text-4xl font-bold text-white">N</span>
                     </div>
                     <div>
-                      <h3 className="text-3xl font-bold text-gray-900 mb-1">Nasir</h3>
+                      <h3 className="text-3xl font-bold text-gray-900 mb-1">Nasir Uddin</h3>
                       <p className="text-xl text-primary-600 font-medium">Co-founder & Lead Developer</p>
                     </div>
                   </div>
@@ -196,7 +196,7 @@ const AboutUs = () => {
                       <span className="text-4xl font-bold text-white">R</span>
                     </div>
                     <div>
-                      <h3 className="text-3xl font-bold text-gray-900 mb-1">Razi</h3>
+                      <h3 className="text-3xl font-bold text-gray-900 mb-1">Wazid Ahmed Razi</h3>
                       <p className="text-xl text-accent-600 font-medium">Co-founder & UX Architect</p>
                     </div>
                   </div>
