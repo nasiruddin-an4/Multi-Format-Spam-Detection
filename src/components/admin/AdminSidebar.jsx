@@ -121,7 +121,7 @@ const AdminSidebar = () => {
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className={`${(isOpen && !isMobile) || isMobile ? 'block' : 'hidden'} flex items-center`}>
             <Logo className="w-8 h-8" />
-            <span className="ml-2 text-lg font-semibold gradient-text">Admin</span>
+            <span className="ml-2 text-lg font-semibold gradient-text">GuardNex</span>
           </div>
           {!isMobile && (
             <button

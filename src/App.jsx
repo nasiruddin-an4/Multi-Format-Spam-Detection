@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Layouts
 import MainLayout from './layouts/MainLayout'
@@ -17,6 +19,9 @@ import AdminUsers from './pages/admin/UserManagement'
 import AdminMessages from './pages/admin/MessageLogs'
 import NotFound from './pages/NotFound'
 import AboutUs from './pages/AboutUs'
+import AnalyticsPage from './pages/admin/AnalyticsPage'
+import SettingsPage from './pages/admin/SettingsPage';
+import UserManagement from './pages/admin/UserManagement';
 
 // Protected route component
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -41,37 +46,43 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 
 function App() {
   return (
-    <Routes>
-      {/* Admin routes - outside MainLayout to avoid showing Navbar and Footer */}
-      <Route path="/admin" element={
-        <ProtectedRoute requiredRole="admin">
-          <AdminLayout />
-        </ProtectedRoute>
-      }>
-        <Route index element={<AdminDashboard />} />
-        <Route path="users" element={<AdminUsers />} />
-        <Route path="messages" element={<AdminMessages />} />
-      </Route>
-      
-      {/* Main layout with Navbar and Footer */}
-      <Route element={<MainLayout />}>
-        {/* Auth routes */}
-        <Route element={<AuthLayout />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+    <>
+      <Routes>
+        {/* Admin routes - outside MainLayout to avoid showing Navbar and Footer */}
+        <Route path="/admin" element={
+          <ProtectedRoute requiredRole="admin">
+            <AdminLayout />
+          </ProtectedRoute>
+        }>
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="messages" element={<AdminMessages />} />
+          <Route path="analytics" element={<AnalyticsPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="/admin/users" element={<UserManagement />} />
         </Route>
         
-        {/* Main routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<AboutUs />} />
-        <Route path="/detect" element={
-          <ProtectedRoute>
-            <DetectionPage />
-          </ProtectedRoute>
-        } />
-        <Route path="*" element={<NotFound />} />
-      </Route>
-    </Routes>
+        {/* Main layout with Navbar and Footer */}
+        <Route element={<MainLayout />}>
+          {/* Auth routes */}
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Route>
+          
+          {/* Main routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/detect" element={
+            <ProtectedRoute>
+              <DetectionPage />
+            </ProtectedRoute>
+          } />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+      <ToastContainer position="bottom-right" />
+    </>
   )
 }
 
