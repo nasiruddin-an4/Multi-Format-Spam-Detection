@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import axios from 'axios';
+import { API_URL } from '../../config/api';
+import { useAuth } from '../../contexts/AuthContext';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -7,148 +10,124 @@ const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
+  const { logout } = useAuth();
 
-  // Mock user data - Replace with actual API call
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        // Simulated API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        const mockUsers = [
-          {
-            id: 1,
-            name: 'John Doe',
-            email: 'john.doe@example.com',
-            role: 'admin',
-            status: 'active',
-            lastActive: '2024-05-12T10:30:00',
-            messagesScanned: 156,
-            spamDetected: 23
-          },
-          {
-            id: 2,
-            name: 'Sarah Johnson',
-            email: 'sarah.j@example.com',
-            role: 'moderator',
-            status: 'active',
-            lastActive: '2024-05-11T15:45:00',
-            messagesScanned: 892,
-            spamDetected: 145
-          },
-          {
-            id: 3,
-            name: 'Michael Chen',
-            email: 'mchen@example.com',
-            role: 'user',
-            status: 'suspended',
-            lastActive: '2024-05-10T09:20:00',
-            messagesScanned: 67,
-            spamDetected: 31
-          },
-          {
-            id: 4,
-            name: 'Emma Wilson',
-            email: 'emma.w@example.com',
-            role: 'user',
-            status: 'pending',
-            lastActive: '2024-05-12T08:15:00',
-            messagesScanned: 45,
-            spamDetected: 8
-          },
-          {
-            id: 5,
-            name: 'Alex Rodriguez',
-            email: 'arod@example.com',
-            role: 'moderator',
-            status: 'active',
-            lastActive: '2024-05-11T20:30:00',
-            messagesScanned: 523,
-            spamDetected: 89
-          },
-          {
-            id: 6,
-            name: 'Lisa Kumar',
-            email: 'lisa.k@example.com',
-            role: 'user',
-            status: 'active',
-            lastActive: '2024-05-12T11:45:00',
-            messagesScanned: 234,
-            spamDetected: 42
-          },
-          {
-            id: 7,
-            name: 'David Smith',
-            email: 'dsmith@example.com',
-            role: 'user',
-            status: 'suspended',
-            lastActive: '2024-05-09T14:20:00',
-            messagesScanned: 178,
-            spamDetected: 65
-          },
-          {
-            id: 8,
-            name: 'Maria Garcia',
-            email: 'mgarcia@example.com',
-            role: 'moderator',
-            status: 'active',
-            lastActive: '2024-05-12T09:10:00',
-            messagesScanned: 445,
-            spamDetected: 76
-          },
-          {
-            id: 9,
-            name: 'James Wilson',
-            email: 'jwilson@example.com',
-            role: 'user',
-            status: 'pending',
-            lastActive: '2024-05-11T16:55:00',
-            messagesScanned: 89,
-            spamDetected: 12
-          },
-          {
-            id: 10,
-            name: 'Priya Patel',
-            email: 'priya.p@example.com',
-            role: 'user',
-            status: 'active',
-            lastActive: '2024-05-12T07:30:00',
-            messagesScanned: 167,
-            spamDetected: 28
-          }
-        ];
-        setUsers(mockUsers);
-        setLoading(false);
-      } catch (error) {
-        toast.error('Failed to fetch users');
-        setLoading(false);
-      }
-    };
-
     fetchUsers();
   }, []);
 
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await axios.get(`${API_URL}/admin/users`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (Array.isArray(response.data)) {
+        setUsers(response.data);
+      } else if (response.data && Array.isArray(response.data.data)) {
+        setUsers(response.data.data);
+      } else {
+        throw new Error('Invalid data format received');
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      
+      if (error.response?.status === 401) {
+        toast.error('Your session has expired. Please login again.');
+        setTimeout(() => {
+          logout();
+        }, 1000);
+        return;
+      }
+      
+      toast.error('Failed to fetch users');
+      setLoading(false);
+    }
+  };
+
   const handleStatusChange = async (userId, newStatus) => {
     try {
-      // Simulated API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      await axios.patch(`${API_URL}/admin/users/${userId}/status`, 
+        { status: newStatus },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
       setUsers(users.map(user => 
         user.id === userId ? { ...user, status: newStatus } : user
       ));
-      toast.success('User status updated successfully');
+      
     } catch (error) {
-      toast.error('Failed to update user status');
+      console.error('Error updating user status:', error);
     }
   };
 
   const handleDeleteUser = async (userId) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        // Simulated API call
-        await new Promise(resolve => setTimeout(resolve, 500));
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        await axios.delete(`${API_URL}/admin/users/${userId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
         setUsers(users.filter(user => user.id !== userId));
-        toast.success('User deleted successfully');
       } catch (error) {
-        toast.error('Failed to delete user');
+        console.error('Error deleting user:', error);
+      }
+    }
+  };
+
+  const handleCreateUser = async (userData) => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await axios.post(`${API_URL}/admin/users`, userData, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      setUsers([...users, response.data]);
+    } catch (error) {
+      console.error('Error creating user:', error);
+      
+      if (error.response?.status === 401) {
+        toast.error('Your session has expired. Please login again.');
+        setTimeout(() => {
+          logout();
+        }, 1000);
+        return;
       }
     }
   };
@@ -176,21 +155,29 @@ const UserManagement = () => {
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">User Management</h1>
-        <div className="flex flex-col md:flex-row gap-4 md:items-center">
+    <div className="p-8 max-w-[1400px] mx-auto bg-gray-50">
+      {/* Header Section */}
+      <div className="mb-10">
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">User Management</h1>
+        <p className="text-gray-500">Manage and monitor user accounts</p>
+      </div>
+
+      {/* Controls Section */}
+      <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
+        <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
           {/* Search */}
-          <div className="relative flex-1">
+          <div className="relative flex-1 w-full">
             <input
               type="text"
-              placeholder="Search users..."
+              placeholder="Search by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-5 py-3 rounded-xl border border-gray-200 bg-white
+                focus:ring-2 focus:ring-blue-400 focus:border-blue-400
+                placeholder-gray-400 transition-all duration-200"
             />
             <svg
-              className="absolute right-3 top-2.5 h-5 w-5 text-gray-400"
+              className="absolute right-4 top-3.5 h-5 w-5 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -204,22 +191,39 @@ const UserManagement = () => {
             </svg>
           </div>
 
-          {/* Filters */}
-          <div className="flex gap-4">
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-4">
+            <button
+              onClick={() => {/* Open create user modal */}}
+              className="inline-flex items-center px-5 py-3 bg-blue-500 text-white 
+                rounded-xl hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 
+                focus:ring-offset-2 transition-all duration-200 font-medium"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+              </svg>
+              New User
+            </button>
+
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="px-5 py-3 rounded-xl border border-gray-200 bg-white
+                focus:ring-2 focus:ring-blue-400 focus:border-blue-400
+                text-gray-600 cursor-pointer hover:border-gray-300 transition-all duration-200"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>
               <option value="suspended">Suspended</option>
               <option value="pending">Pending</option>
             </select>
+
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="px-5 py-3 rounded-xl border border-gray-200 bg-white
+                focus:ring-2 focus:ring-blue-400 focus:border-blue-400
+                text-gray-600 cursor-pointer hover:border-gray-300 transition-all duration-200"
             >
               <option value="newest">Newest First</option>
               <option value="oldest">Oldest First</option>
@@ -228,42 +232,41 @@ const UserManagement = () => {
         </div>
       </div>
 
-      {/* User List */}
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+      {/* User List Table */}
+      <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <table className="min-w-full divide-y divide-gray-100">
+            <thead>
+              <tr className="bg-gray-50">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Role
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Messages
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Last Active
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-100">
               {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
+                <tr key={user.id} className="hover:bg-gray-50 transition-colors duration-200">
+                  <td className="px-6 py-4">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10">
-                        <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
-                          <span className="text-primary-600 font-medium text-sm">
-                            {user.name.split(' ').map(n => n[0]).join('')}
-                          </span>
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 
+                          flex items-center justify-center text-white font-medium text-sm">
+                          {user.name.split(' ').map(n => n[0]).join('')}
                         </div>
                       </div>
                       <div className="ml-4">
@@ -272,37 +275,44 @@ const UserManagement = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                      bg-blue-50 text-blue-700">
                       {user.role}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4">
                     <select
                       value={user.status}
                       onChange={(e) => handleStatusChange(user.id, e.target.value)}
-                      className={`text-sm rounded-full px-2 py-1 font-medium ${
-                        user.status === 'active' ? 'bg-green-100 text-green-800' :
-                        user.status === 'suspended' ? 'bg-red-100 text-red-800' :
-                        'bg-yellow-100 text-yellow-800'
-                      }`}
+                      className={`text-sm rounded-full px-3 py-1 font-medium border-0 cursor-pointer
+                        ${user.status === 'active' ? 'bg-green-50 text-green-700' :
+                          user.status === 'suspended' ? 'bg-red-50 text-red-700' :
+                          'bg-yellow-50 text-yellow-700'}`}
                     >
                       <option value="active">Active</option>
                       <option value="suspended">Suspended</option>
                       <option value="pending">Pending</option>
                     </select>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div>Scanned: {user.messagesScanned}</div>
-                    <div>Spam: {user.spamDetected}</div>
+                  <td className="px-6 py-4">
+                    <div className="space-y-1">
+                      <div className="text-sm text-gray-600">
+                        <span className="font-medium">{user.messagesScanned}</span> scanned
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        <span className="font-medium">{user.spamDetected}</span> spam
+                      </div>
+                    </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm text-gray-500">
                     {new Date(user.lastActive).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="px-6 py-4 text-right">
                     <button
                       onClick={() => handleDeleteUser(user.id)}
-                      className="text-red-600 hover:text-red-900 ml-4"
+                      className="text-sm font-medium text-red-600 hover:text-red-700 
+                        transition-colors duration-200"
                     >
                       Delete
                     </button>

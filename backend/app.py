@@ -472,6 +472,76 @@ def get_messages(current_user):
     except Exception as e:
         return jsonify({'message': 'Error fetching messages', 'error': str(e)}), 500
 
+@app.route('/api/admin/users', methods=['POST'])
+@token_required
+@admin_required
+def create_user():
+    try:
+        data = request.get_json()
+        name = data.get('name')
+        email = data.get('email')
+        password = data.get('password')
+        role = data.get('role', 'user')
+
+        if not all([name, email, password]):
+            return jsonify({'message': 'Missing required fields'}), 400
+
+        hashed_password = generate_password_hash(password)
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            INSERT INTO users (name, email, password, role)
+            VALUES (%s, %s, %s, %s)
+            RETURNING id, name, email, role, created_at
+        """, (name, email, hashed_password, role))
+        
+        new_user = cursor.fetchone()
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({
+            'id': new_user[0],
+            'name': new_user[1],
+            'email': new_user[2],
+            'role': new_user[3],
+            'created_at': new_user[4]
+        }), 201
+        
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
+
+@app.route('/api/admin/users/<int:user_id>/status', methods=['PATCH'])
+@token_required
+@admin_required
+def update_user_status(user_id):
+    try:
+        data = request.get_json()
+        status = data.get('status')
+        
+        if not status:
+            return jsonify({'message': 'Missing status'}), 400
+            
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            UPDATE users
+            SET status = %s
+            WHERE id = %s
+        """, (status, user_id))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return jsonify({'message': 'User status updated successfully'}), 200
+        
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
+
 # Initialize the database
 init_db()
 
