@@ -144,16 +144,37 @@ def load_or_train_model():
     # Otherwise train a new model
     # Sample data for demonstration
     data = {
-        'message': [
-            'Free entry in 2 a weekly comp to win FA Cup final tkts',
-            'URGENT! You have won a 1 week FREE membership in our £100,000 Prize Jackpot!',
-            'Hello, how are you doing today?',
-            'Meeting scheduled for tomorrow at 10am',
-            'WINNER!! As a valued network customer you have been selected to receivea £900 prize reward!',
-            'SIX chances to win CASH! From 100 to 20,000 pounds txt>'
-        ],
-        'label': [1, 1, 0, 0, 1, 1]  # 1 for spam, 0 for ham
-    }
+    'message': [
+        # SMS spam
+        'Congratulations! You have won a free cruise to the Bahamas! Text YES to 98765 now!',
+        'URGENT! Your mobile number has been selected to win £5000 cash. Call 09061701461 now!',
+        'Win a brand new car! Reply WIN to enter the lucky draw.',
+
+        # Email spam
+        'Dear user, your mailbox has exceeded its quota. Click here to re-verify your account.',
+        'You have been pre-approved for a $10,000 loan. Apply now, no credit check required!',
+        'Get Viagra at 50% discount. Limited offer!',
+
+        # Social media spam
+        'Check out this amazing weight loss product! Lose 10kg in 2 weeks! 🔥 Click the link in bio!',
+        'Win free AirPods! Just follow and DM us "WIN" to claim your prize!',
+        'Get thousands of followers instantly. DM us now! 🚀',
+
+        # Ham / not spam messages (normal)
+        'Hey, are we still on for lunch tomorrow?',
+        'Can you send me the report by EOD?',
+        'Happy birthday! Hope you have a wonderful day!',
+        'The meeting has been moved to 3pm.',
+        'Don’t forget to pick up some milk on your way home.',
+        'Great job on the presentation today!'
+    ],
+    'label': [
+        1, 1, 1,    # SMS spam
+        1, 1, 1,    # Email spam
+        1, 1, 1,    # Social media spam
+        0, 0, 0, 0, 0, 0  # Normal (ham) messages
+    ]
+}
     
     df = pd.DataFrame(data)
     
