@@ -170,7 +170,7 @@ const AboutUs = () => {
                     </div>
                   </div>
                   <p className="text-gray-600 text-lg leading-relaxed">
-                    Leads the development of our AI algorithms and spam detection systems. With expertise in machine learning and cybersecurity, Nasir ensures our technology remains at the cutting edge.
+                    Leads the development of our AI algorithms and spam detection systems. With expertise in machine learning and cybersecurity, Nasir ensures our technology.
                   </p>
                   <div className="mt-8 flex space-x-4">
                     <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-white hover:bg-primary-600 transition-all duration-300">
