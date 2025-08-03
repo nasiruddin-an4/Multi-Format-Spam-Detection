@@ -31,7 +31,7 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev_key_please_change_i
 # app.config['DATABASE_URL'] = os.environ.get('DATABASE_URL', 'postgresql://postgres:Mango@292@localhost:5432/spam_detection')
 app.config['DATABASE_URL'] = os.environ.get(
     'DATABASE_URL',
-    'postgresql://postgres:Mango%40292@localhost:5432/spam_detection'
+    'postgresql://postgres:babu4321@localhost:5432/spam_detection'
 )
 
 app.config['JWT_EXPIRATION'] = int(os.environ.get('JWT_EXPIRATION', 86400))  # 24 hours
@@ -143,45 +143,48 @@ def load_or_train_model():
     
     # Need To train a model For Automatic Detection and wide area detection
     # Sample data for demonstration
-    data = {
-    'message': [
-        # SMS spam
-        'Congratulations! You have won a free cruise to the Bahamas! Text YES to 98765 now!',
-        'URGENT! Your mobile number has been selected to win £5000 cash. Call 09061701461 now!',
-        'Win a brand new car! Reply WIN to enter the lucky draw.',
+#     data = {
+#     'message': [
+#         # SMS spam
+#         'Congratulations! You have won a free cruise to the Bahamas! Text YES to 98765 now!',
+#         'URGENT! Your mobile number has been selected to win £5000 cash. Call 09061701461 now!',
+#         'Win a brand new car! Reply WIN to enter the lucky draw.',
 
-        # Email spam
-        'Dear user, your mailbox has exceeded its quota. Click here to re-verify your account.',
-        'You have been pre-approved for a $10,000 loan. Apply now, no credit check required!',
-        'Get Viagra at 50% discount. Limited offer!',
+#         # Email spam
+#         'Dear user, your mailbox has exceeded its quota. Click here to re-verify your account.',
+#         'You have been pre-approved for a $10,000 loan. Apply now, no credit check required!',
+#         'Get Viagra at 50% discount. Limited offer!',
 
-        # Social media spam
-        'Check out this amazing weight loss product! Lose 10kg in 2 weeks! 🔥 Click the link in bio!',
-        'Win free AirPods! Just follow and DM us "WIN" to claim your prize!',
-        'Get thousands of followers instantly. DM us now! 🚀',
+#         # Social media spam
+#         'Check out this amazing weight loss product! Lose 10kg in 2 weeks! 🔥 Click the link in bio!',
+#         'Win free AirPods! Just follow and DM us "WIN" to claim your prize!',
+#         'Get thousands of followers instantly. DM us now! 🚀',
 
-        # Ham / not spam messages (normal)
-        'Hey, are we still on for lunch tomorrow?',
-        'Can you send me the report by EOD?',
-        'Happy birthday! Hope you have a wonderful day!',
-        'The meeting has been moved to 3pm.',
-        'Don’t forget to pick up some milk on your way home.',
-        'Great job on the presentation today!'
-    ],
-    'label': [
-        1, 1, 1,    # SMS spam
-        1, 1, 1,    # Email spam
-        1, 1, 1,    # Social media spam
-        0, 0, 0, 0, 0, 0  # Normal (ham) messages
-    ]
-}
-    
-    df = pd.DataFrame(data)
-    
+#         # Ham / not spam messages (normal)
+#         'Hey, are we still on for lunch tomorrow?',
+#         'Can you send me the report by EOD?',
+#         'Happy birthday! Hope you have a wonderful day!',
+#         'The meeting has been moved to 3pm.',
+#         'Don’t forget to pick up some milk on your way home.',
+#         'Great job on the presentation today!'
+#     ],
+#     'label': [
+#         1, 1, 1,    # SMS spam
+#         1, 1, 1,    # Email spam
+#         1, 1, 1,    # Social media spam
+#         0, 0, 0, 0, 0, 0  # Normal (ham) messages
+#     ]
+# }
+    # df = pd.DataFrame(data)
+    df = pd.read_csv('spam_dataset.csv')
+    X = df['message']
+    y = df['label']   
+    # X_train, X_test, y_train, y_test = train_test_split(
+    #     df['message'], df['label'], test_size=0.2, random_state=42
+    # )
     X_train, X_test, y_train, y_test = train_test_split(
-        df['message'], df['label'], test_size=0.2, random_state=42
+        X, y, test_size=0.2, random_state=42
     )
-    
     # Create and train the model
     model = Pipeline([
         ('tfidf', TfidfVectorizer(stop_words='english', max_features=5000)),
@@ -562,6 +565,35 @@ def update_user_status(user_id):
         
     except Exception as e:
         return jsonify({'message': str(e)}), 500
+
+# Add at the bottom of your file, **after** load_or_train_model() and before init_db()
+
+@app.route('/api/admin/train', methods=['POST'])
+@token_required
+@admin_required
+def retrain_model(current_user):
+    """
+    Endpoint to force a retrain of the spam model from the CSV.
+    Only accessible to users with role='admin'.
+    """
+    try:
+        global spam_model
+        # Delete old model file (so load_or_train_model will retrain)
+        model_path = 'spam_model.pkl'
+        if os.path.exists(model_path):
+            os.remove(model_path)
+
+        # Re-load/train
+        spam_model = load_or_train_model()
+
+        return jsonify({
+            'message': 'Model retrained successfully',
+            'timestamp': datetime.utcnow().isoformat() + 'Z'
+        }), 200
+
+    except Exception as e:
+        return jsonify({'message': 'Retraining failed', 'error': str(e)}), 500
+
 
 # Initialize the database
 init_db()
