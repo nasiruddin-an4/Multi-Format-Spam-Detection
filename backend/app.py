@@ -141,7 +141,7 @@ def load_or_train_model():
             model = pickle.load(file)
         return model
     
-    # Need To train a model For Automatic Detection and wide area detection
+    # Need To train a model and Dataset For Automatic Detection and wide area detection
     # Sample data for demonstration
 #     data = {
 #     'message': [
